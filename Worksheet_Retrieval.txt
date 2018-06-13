@@ -1,0 +1,288 @@
+Sub ImportData()
+Dim x As Workbook
+Dim y As Workbook
+Dim m As Workbook
+Dim objFSO As Object
+Dim objFolder As Object
+Dim objFile As Object
+Dim objLoopName As Object
+Dim Sheetname As String
+Dim i As Integer
+Dim ArraySum(10 To 168) As Integer
+Dim ArrayTable1() As Integer
+Dim ArrayTable2() As Integer
+Dim h As Integer
+Dim q As Integer
+Dim o As Integer
+Dim u As Integer
+Dim r As Integer
+Dim s As Integer
+Dim t As Integer
+Dim a As Integer
+Dim l As Integer
+Dim k As Integer
+Dim Table1 As Integer
+Dim Table2 As Integer
+q = 1
+i = 5
+j = 5
+h = 4
+e = 10
+
+Set m = Workbooks.Open(ThisWorkbook.Path & "\Products\Products.xlsx")
+f = m.Sheets(1).Range("A:A").Cells.SpecialCells(xlCellTypeConstants).Count
+
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+Set objFolder = objFSO.GetFolder(ThisWorkbook.Path & "\Data\")
+Set y = ThisWorkbook
+
+m.Sheets(1).Range(Cells(7, 1), Cells(f, 3)).Copy
+y.Sheets("Analysis").Cells(10, 1).PasteSpecial
+y.Sheets("Transfers").Cells(7, 1).PasteSpecial
+y.Sheets("Order").Cells(7, 1).PasteSpecial
+y.Sheets("Summary").Cells(7, 1).PasteSpecial
+y.Sheets("Tender").Cells(6, 1).PasteSpecial
+
+'loops through each file in the directory and prints their names and path
+For Each objFile In objFolder.Files
+
+'## Open both workbooks first:
+Set x = Workbooks.Open(ThisWorkbook.Path & "\Data\" & objFile.Name)
+
+
+'Now, copy what you want from x:
+'x.Sheets(1).Range("D7:D165").Copy
+x.Sheets(1).Range(Cells(7, 4), Cells(f, 4)).Copy
+
+'Now, paste to y worksheet:
+y.Sheets("Analysis").Cells.Item(10, i).PasteSpecial
+
+'Naming Column
+y.Sheets("Analysis").Cells.Item(6, i).Value = objFile.Name
+y.Sheets("Analysis").Cells.Item(6, i).Value = Left(y.Sheets("Analysis").Cells.Item(6, i).Value, Len(y.Sheets("Analysis").Cells.Item(6, i).Value) - 5)
+
+'Insert Column
+ActiveCell.EntireColumn.Offset(0, 1).Insert
+
+ReDim Preserve ArrayTable1(q)
+ArrayTable1(q) = i
+q = q + 1
+
+i = i + 1
+'Close x:
+x.Close
+
+
+For e = 10 To f + 3
+Cells(e, h).Value = WorksheetFunction.Sum(Range(Cells(e, j), Cells(e, i)))
+
+Next e
+
+Next objFile
+
+
+
+a = j
+k = i + 1
+u = i + 2
+q = 1
+
+y.Sheets("Analysis").Cells.Item(7, u - 1).Value = "Total"
+y.Sheets("Analysis").Cells.Item(8, u - 1).Value = "Stock"
+
+For Each objFile In objFolder.Files
+
+'## Open both workbooks first:
+Set x = Workbooks.Open(ThisWorkbook.Path & "\Data\" & objFile.Name)
+Set y = ThisWorkbook
+
+'Now, copy what you want from x:
+'x.Sheets(1).Range("E7:E165").Copy
+x.Sheets(1).Range(Cells(7, 5), Cells(f, 5)).Copy
+
+'Now, paste to y worksheet:
+y.Sheets("Analysis").Cells.Item(10, u).PasteSpecial
+
+'Naming Column
+y.Sheets("Analysis").Cells.Item(6, u).Value = objFile.Name
+
+'Insert Column
+ActiveCell.EntireColumn.Offset(0, 1).Insert
+
+ReDim Preserve ArrayTable2(q)
+ArrayTable2(q) = u
+q = q + 1
+
+u = u + 1
+'Close x:
+x.Close
+
+For e = 10 To f + 3
+Cells(e, k).Value = WorksheetFunction.Sum(Range(Cells(e, k + 1), Cells(e, u)))
+
+Next e
+
+Next objFile
+
+r = a
+s = u + 1
+t = u + 2
+q = 1
+
+y.Sheets("Analysis").Cells.Item(7, t - 1).Value = "Total"
+y.Sheets("Analysis").Cells.Item(8, t - 1).Value = "Order"
+
+For Each objFile In objFolder.Files
+
+'## Open both workbooks first:
+Set y = ThisWorkbook
+
+y.Sheets("Analysis").Cells.Item(6, t).Value = objFile.Name
+
+For e = 10 To f + 3
+
+If Cells(e, ArrayTable1(q)) > Cells(e, ArrayTable2(q)) Then
+y.Sheets("Analysis").Cells.Item(e, t) = Cells(e, ArrayTable1(q)) - Cells(e, ArrayTable2(q))
+
+Else
+y.Sheets("Analysis").Cells.Item(e, t) = 0
+
+End If
+
+Next e
+
+For e = 10 To f + 3
+Cells(e, s).Value = WorksheetFunction.Sum(Range(Cells(e, s + 1), Cells(e, t)))
+
+Next e
+
+q = q + 1
+t = t + 1
+
+Next objFile
+
+r = a
+s = t + 1
+t = t + 2
+q = 1
+
+y.Sheets("Analysis").Cells.Item(7, t - 1).Value = "Total"
+y.Sheets("Analysis").Cells.Item(8, t - 1).Value = "Transfer"
+
+For Each objFile In objFolder.Files
+
+'## Open both workbooks first:
+Set y = ThisWorkbook
+
+y.Sheets("Analysis").Cells.Item(6, t).Value = objFile.Name
+
+For e = 10 To f + 3
+
+If Cells(e, ArrayTable1(q)) = 0 Then
+y.Sheets("Analysis").Cells.Item(e, t) = Cells(e, ArrayTable2(q))
+
+Else
+y.Sheets("Analysis").Cells.Item(e, t) = 0
+
+End If
+
+Next e
+
+For e = 10 To f + 3
+Cells(e, s).Value = WorksheetFunction.Sum(Range(Cells(e, s + 1), Cells(e, t)))
+
+Next e
+
+q = q + 1
+t = t + 1
+
+Next objFile
+
+'Compute the Transfer Page
+
+r = a
+s = 8
+t = 9
+q = 1
+e = 6
+
+
+
+For Each objFile In objFolder.Files
+z = z + 1
+Next objFile
+z = z + 2
+
+l = z
+
+For Each objFile In objFolder.Files
+
+y.Sheets("Transfers").Cells.Item(5, l).Value = objFile.Name
+
+l = l + 1
+Next objFile
+
+'0 Assignment
+
+For i = 5 To 14
+For e = 10 To f + 3
+If IsEmpty(y.Sheets("Analysis").Cells.Item(e, i).Value) Then
+y.Sheets("Analysis").Cells.Item(e, i).Value = 0
+End If
+Next e
+Next i
+
+For i = 17 To 26
+For e = 10 To f
+If IsEmpty(y.Sheets("Analysis").Cells.Item(e, i).Value) Then
+y.Sheets("Analysis").Cells.Item(e, i).Value = 0
+End If
+Next e
+Next i
+
+
+'Transfer Calculation
+
+
+For Each objFile In objFolder.Files
+
+y.Sheets("Transfers").Cells.Item(5, t).Value = objFile.Name
+
+Set y = ThisWorkbook
+For e = 7 To f
+
+If y.Sheets("Analysis").Cells(e + 3, ArrayTable1(q)) = 0 Then
+y.Sheets("Transfers").Cells.Item(e, t) = y.Sheets("Analysis").Cells(e + 3, ArrayTable2(q)).Value
+
+ElseIf y.Sheets("Analysis").Cells(e + 3, ArrayTable1(q)) > y.Sheets("Analysis").Cells(e + 3, ArrayTable2(q)) Then
+y.Sheets("Transfers").Cells(e, t) = y.Sheets("Analysis").Cells(e + 3, ArrayTable2(q)).Value - y.Sheets("Analysis").Cells(e + 3, ArrayTable1(q)).Value
+'y.Sheets("Transfers").Cells(e, t) = y.Sheets("Transfers").Cells(e, t) * (-1)
+
+Else
+y.Sheets("Transfers").Cells.Item(e, t) = 0
+
+End If
+
+Next e
+
+q = q + 1
+t = t + 1
+
+
+y.Sheets("Transfers").Select
+Columns(t).Select
+ActiveCell.EntireColumn.Insert
+
+
+Next objFile
+
+ActiveCell.EntireColumn.Delete
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+End Sub
