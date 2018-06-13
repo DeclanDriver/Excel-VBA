@@ -1,0 +1,74 @@
+Sub ProductList_Update()
+
+
+Dim x As Workbook
+Dim y As Workbook
+Dim m As Workbook
+Dim objFSO As Object
+Dim objFolder As Object
+Dim objFile As Object
+Dim objLoopName As Object
+Dim Sheetname As String
+Dim i As Integer
+Dim ArraySum(10 To 168) As Integer
+Dim ArrayTable1() As Integer
+Dim ArrayTable2() As Integer
+Dim h As Integer
+Dim q As Integer
+Dim o As Integer
+Dim u As Integer
+Dim r As Integer
+Dim s As Integer
+Dim t As Integer
+Dim a As Integer
+Dim l As Integer
+Dim k As Integer
+Dim Table1 As Integer
+Dim Table2 As Integer
+q = 1
+i = 5
+j = 5
+h = 4
+e = 10
+
+Set m = Workbooks.Open(ThisWorkbook.Path & "\Products\Products.xlsx")
+f = m.Sheets(1).Range("A:A").Cells.SpecialCells(xlCellTypeConstants).Count
+
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+
+Set y = ThisWorkbook
+
+m.Sheets(1).Range(Cells(7, 1), Cells(f, 3)).Copy
+y.Sheets("Analysis").Cells(10, 1).PasteSpecial
+y.Sheets("Transfers").Cells(7, 1).PasteSpecial
+y.Sheets("Order").Cells(7, 1).PasteSpecial
+y.Sheets("Summary").Cells(7, 1).PasteSpecial
+y.Sheets("Tender").Cells(6, 1).PasteSpecial
+
+Set objFolder = objFSO.GetFolder(ThisWorkbook.Path & "\Data\")
+
+For Each objFile In objFolder.Files
+Set x = Workbooks.Open(ThisWorkbook.Path & "\Data\" & objFile.Name)
+m.Sheets(1).Range("A7:A900").Copy
+x.Sheets(1).Range("A7").Select
+ActiveCell.PasteSpecial
+m.Sheets(1).Range("B7:B900").Copy
+x.Sheets(1).Range("B7").Select
+ActiveCell.PasteSpecial
+m.Sheets(1).Range("C7:C900").Copy
+x.Sheets(1).Range("C7").Select
+ActiveCell.PasteSpecial
+x.Save
+
+
+x.Close
+
+Next objFile
+
+m.Close
+End Sub
+

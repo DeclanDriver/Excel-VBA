@@ -1,0 +1,84 @@
+Sub OrderCalculation()
+Dim x As Workbook
+Dim y As Workbook
+Dim objFSO As Object
+Dim objFolder As Object
+Dim objFile As Object
+Dim objLoopName As Object
+Dim Sheetname As String
+Dim i As Integer
+Dim t As Integer
+Dim z As Integer
+Dim e As Integer
+Dim u As Integer
+Dim f As Integer
+
+i = 9
+z = 0
+t = 5
+u = 0
+
+Set m = Workbooks.Open(ThisWorkbook.Path & "\Products\Products.xlsx")
+f = m.Sheets(1).Range("A:A").Cells.SpecialCells(xlCellTypeConstants).Count
+
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+Set objFolder = objFSO.GetFolder(ThisWorkbook.Path & "\Data\")
+
+For Each objFile In objFolder.Files
+z = z + 1
+u = u + 1
+Next objFile
+z = z + 2
+
+
+
+For Each objFile In objFolder.Files
+
+Set y = ThisWorkbook
+
+y.Sheets("Order").Cells.Item(3, t).Value = objFile.Name
+
+
+For e = 7 To f
+If y.Sheets("Transfers").Cells(e, i).Value < 0 Then
+y.Sheets("Order").Cells(e, t).Value = y.Sheets("Transfers").Cells(e, i).Value - y.Sheets("Transfers").Cells(e, i + z).Value
+y.Sheets("Order").Cells(e, t).Value = y.Sheets("Order").Cells(e, t).Value * (-1)
+y.Sheets("Order").Cells(e, 4).Value = WorksheetFunction.Sum(Range(Cells(e, i), Cells(e, i + z)))
+Else
+y.Sheets("Order").Cells(e, t).Value = 0
+End If
+
+
+
+ 'WorksheetFunction.Sum (Range(Cells(e, s + 1), Cells(e, t)))
+Next e
+
+i = i + 1
+t = t + 1
+
+Next objFile
+
+i = 5
+For e = 7 To f
+
+y.Sheets("Order").Cells(e, 4).Value = WorksheetFunction.Sum(Range(Cells(e, i), Cells(e, i + z)))
+ 'WorksheetFunction.Sum (Range(Cells(e, s + 1), Cells(e, t)))
+Next e
+u = u + 22
+For i = 22 To u
+
+For e = 6 To f - 1
+y.Sheets("Tender").Cells(e, i).Value = y.Sheets("Order").Cells(e + 1, i - 17).Value
+
+Next e
+Next i
+
+Application.ScreenUpdating = True
+Application.DisplayAlerts = True
+
+
+End Sub
