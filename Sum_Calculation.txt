@@ -1,0 +1,129 @@
+Sub SummaryCalculation()
+
+Dim x As Workbook
+Dim y As Workbook
+Dim objFSO As Object
+Dim objFolder As Object
+Dim objFile As Object
+Dim objLoopName As Object
+Dim Sheetname As String
+Dim i As Integer
+Dim t As Integer
+Dim z As Integer
+Dim e As Integer
+
+i = 9
+z = 0
+t = 4
+e = 10
+
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+Set m = Workbooks.Open(ThisWorkbook.Path & "\Products\Products.xlsx")
+f = m.Sheets(1).Range("A:A").Cells.SpecialCells(xlCellTypeConstants).Coun
+
+Set objFolder = objFSO.GetFolder(ThisWorkbook.Path & "\Data\")
+
+For Each objFile In objFolder.Files
+z = z + 1
+Next objFile
+z = z + 2
+
+
+Set y = ThisWorkbook
+
+'Calculate Total Usage
+For e = 10 To f + 3
+
+y.Sheets("Summary").Cells(e - 3, 4).Value = y.Sheets("Analysis").Cells(e, 4).Value
+
+Next e
+
+'Calculate Total In Stock
+For e = 10 To f + 3
+
+y.Sheets("Summary").Cells(e - 3, 5).Value = y.Sheets("Analysis").Cells(e, 4 + z).Value
+
+Next e
+
+'Calculate Order This Month
+For e = 10 To f + 3
+
+y.Sheets("Summary").Cells(e - 3, 6).Value = y.Sheets("Analysis").Cells(e, 4 + 2 * z).Value
+
+Next e
+
+'Calculate Transfer This Month
+For e = 10 To f + 3
+
+y.Sheets("Summary").Cells(e - 3, 7).Value = y.Sheets("Analysis").Cells(e, 4 + 3 * z).Value
+
+Next e
+
+End Sub
+Sub TenderImport()
+
+Dim x As Workbook
+Dim y As Workbook
+Dim objFSO As Object
+Dim objFolder As Object
+Dim objFile As Object
+Dim objLoopName As Object
+Dim Sheetname As String
+Dim i As Integer
+Dim t As Integer
+Dim z As Integer
+Dim e As Integer
+
+i = 5
+
+Set objFSO = CreateObject("Scripting.FileSystemObject")
+
+Application.ScreenUpdating = False
+Application.DisplayAlerts = False
+
+Set objFolder = objFSO.GetFolder(ThisWorkbook.Path & "\Tender\")
+
+Set m = Workbooks.Open(ThisWorkbook.Path & "\Products\Products.xlsx")
+f = m.Sheets(1).Range("A:A").Cells.SpecialCells(xlCellTypeConstants).Coun
+
+For Each objFile In objFolder.Files
+z = z + 1
+Next objFile
+z = z + 2
+
+'loops through each file in the directory and prints their names and path
+For Each objFile In objFolder.Files
+
+'## Open both workbooks first:
+Set x = Workbooks.Open(ThisWorkbook.Path & "\Tender\" & objFile.Name)
+Set y = ThisWorkbook
+
+'Now, copy what you want from x:
+'x.Sheets(1).Range("D6:D164").Copy
+x.Sheets(1).Range(Cells(6, 4), Cells(f, 4)).Copy
+
+
+'Now, paste to y worksheet:
+y.Sheets("Tender").Cells.Item(6, i).PasteSpecial
+
+'Naming Column
+'y.Sheets("Analysis").Cells.Item(5, i).Value = objFile.Name
+
+'Insert Column
+'ActiveCell.EntireColumn.Offset(0, 1).Insert
+
+'ReDim Preserve ArrayTable1(q)
+'ArrayTable1(q) = i
+'q = q + 1
+
+i = i + 1
+'Close x:
+x.Close
+Next objFile
+
+
+End Sub
