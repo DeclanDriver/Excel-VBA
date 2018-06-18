@@ -1,0 +1,169 @@
+Sub HighestVarianceFile()
+Dim x As Long
+Dim y As Long
+Dim i As Long
+Dim o As Long
+Dim Max As String
+Dim Min As String
+Dim g As Workbook
+Dim rng As Range
+
+u = 1
+o = 1
+x = 1
+y = 1
+i = 1
+
+Set g = ThisWorkbook
+
+i = g.Sheets("Sheet2").Range("A:A").Cells.SpecialCells(xlCellTypeConstants).Count
+
+For o = 1 To i
+
+Set rng = g.Sheets("Sheet2").Range("G" & o & ":AR" & o)
+'Set rng = g.Sheets("Sheet2").Range(Cells(o, 5), Cells(o, 60))
+
+y = WorksheetFunction.Sum(rng) * WorksheetFunction.Count(rng)
+
+If y > x Then
+
+x = y
+Max = g.Sheets("Sheet2").Range("A" & o)
+Min = g.Sheets("Sheet2").Range("C" & o)
+
+End If
+
+Next o
+
+'g.Sheets("Sheet1").Range("B3") = x
+g.Sheets("Sheet1").Range("A2") = Max
+g.Sheets("Sheet1").Range("B2") = Min
+
+End Sub
+
+
+Sub TagVarianceFile()
+
+Dim x As Long
+Dim y As Long
+Dim i As Long
+Dim o As Long
+Dim j As Long
+Dim z As Long
+Dim Max As String
+Dim Min As String
+Dim g As Workbook
+Dim rng As Range
+
+
+u = 1
+o = 1
+x = 1
+y = 1
+i = 1
+j = 1
+
+Set g = ThisWorkbook
+
+i = g.Sheets("Sheet2").Range("A:A").Cells.SpecialCells(xlCellTypeConstants).Count
+u = g.Sheets("Sheet2").Range("G1:AR1").Cells.SpecialCells(xlCellTypeConstants).Count
+
+For o = 1 To i
+    
+    z = 0
+    
+    Set rng = g.Sheets("Sheet2").Range("G" & o & ":AR" & o)
+
+    For y = 1 To u
+
+    If Cells(1, y).Value > 1 Then
+    
+    z = z + 1
+    
+    End If
+    
+    If z > u Then
+    
+    x = WorksheetsFunction.Sum(rng)
+    
+    If x > j Then
+
+        j = x
+
+    End If
+    
+    End If
+    
+    Next y
+    
+
+
+Max = g.Sheets("Sheet2").Range("A" & o).Value
+Min = g.Sheets("Sheet2").Range("C" & o).Value
+
+Next o
+
+
+g.Sheets("Sheet1").Range("A3").Value = Max
+g.Sheets("Sheet1").Range("B3").Value = Min
+
+
+End Sub
+
+Sub Collection()
+Dim x As Long
+Dim y As Long
+Dim i As Long
+Dim o As Long
+Dim t As Long
+Dim k As Long
+Dim u, u1 As Long
+Dim l As Long
+Dim p As Long
+Dim ff As Long
+Dim Max As String
+Dim Min As String
+Dim g As Workbook
+Dim rng As Variant
+
+'rng = Array("G", "K", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL", "AM", "AN", "AO", "AP", "AQ")
+rng = Array(7, 11, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43)
+
+Set g = ThisWorkbook
+l = 31
+o = 2
+i = g.Sheets("Sheet2").Range("A:A").Cells.SpecialCells(xlCellTypeConstants).Count
+t = WorksheetFunction.Count(rng)
+
+For y = 0 To l
+p = rng(y)
+
+Max = g.Sheets("Sheet2").Cells.Item(1, p).Value
+g.Sheets("Sheet1").Cells.Item(y + 4, 3).Value = Max
+
+u = 0
+u1 = 0
+For o = 2 To i
+
+ff = WorksheetFunction.Sum(g.Sheets("Sheet2").Range("G" & o & ":AO" & o))
+
+
+u = g.Sheets("Sheet2").Cells.Item(o, p).Value * ff / 100
+
+
+If u > u1 Then
+
+u1 = u
+g.Sheets("Sheet1").Range("A" & y + 4).Value = g.Sheets("Sheet2").Range("A" & o).Value
+g.Sheets("Sheet1").Range("B" & y + 4).Value = g.Sheets("Sheet2").Range("C" & o).Value
+g.Sheets("Sheet1").Range("L" & y + 4).Value = g.Sheets("Sheet2").Range("D" & o).Value & " Bytes"
+End If
+
+Next o
+
+Next y
+'MsgBox u
+
+
+End Sub
+
